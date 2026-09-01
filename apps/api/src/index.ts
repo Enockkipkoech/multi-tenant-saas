@@ -14,6 +14,8 @@ app.use("/webhooks", stripeIngestRouter);
 
 app.use(express.json());
 
+app.get("/", (_req, res) => res.status(200).json({ status: "Success. Multi-tenant SaaS API is running.", Description: "Hyper Assesment API for 200+ Workspaces multi-tenant. This is the public-facing API surface for tenants and platform admins. All tenant routes are RLS-scoped to the authenticated tenant", Developer: "[Developed by Enock Kipkoech]" }));
+
 app.get("/healthz", (_req, res) => res.status(200).json({ status: "Success. Multi-tenant SaaS API is running.", Description: "Hyper Assesment API for 200+ Workspaces multi-tenant. This is the public-facing API surface for tenants and platform admins. All tenant routes are RLS-scoped to the authenticated tenant", Developer: "[Developed by Enock Kipkoech]" }));
 
 // Tenant-facing API surface — every route here goes through authenticateTenant().

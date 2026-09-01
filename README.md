@@ -10,6 +10,8 @@ See [architecture diagrams](docs/Multi-tenant-saas-compiled-Architecture.svg#res
   <img src="docs/Multi-tenant-saas-compiled-Architecture.svg" alt="Architecture overview" width="800">
 </p>
 
+Published Diagrams: [tldraw.com](https://www.tldraw.com/p/dOzO7eokDODtq6Re1hHCS?d=v-2370.-2465.12525.7251.page)
+
 
 ## 0. Getting Started
 
