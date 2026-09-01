@@ -1,7 +1,4 @@
-// Schema derived from db/migrations/*.sql — same tables as README §3's ERD.
-// Prisma now owns schema + migrations; Terraform still owns nothing here
-// (README §7: infra/ provisions the Supabase project, not its schema).
-
+// Prisma schema file, see https://pris.ly/d/prisma-schema
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,7 +6,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // migrations bypass the pooler; see README §7
+  directUrl = env("DIRECT_URL") 
 }
 
 enum MembershipRole {
