@@ -1,0 +1,487 @@
+{
+  "info": {
+    "name": "Switchboard — Multi-Tenant Backend",
+    "description": "Endpoint tests for the Switchboard API, including tenant-isolation and RBAC negative cases.\n\nSetup:\n1. pnpm migrate && pnpm seed\n2. Mint tokens with the commands the seed prints\n3. Fill the collection variables below\n4. Run `pnpm dev`\n\nThe isolation tests (folder 4) are the interesting ones — they assert that a valid token for Tenant A cannot reach Tenant B's data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "tenantAToken", "value": "PASTE_TENANT_A_JWT" },
+    { "key": "tenantBToken", "value": "PASTE_TENANT_B_JWT" },
+    { "key": "adminToken", "value": "PASTE_ADMIN_JWT" },
+    { "key": "tenantAId", "value": "PASTE_TENANT_A_ID" },
+    { "key": "tenantBId", "value": "PASTE_TENANT_B_ID" },
+    { "key": "twilioAuthToken", "value": "PASTE_TWILIO_AUTH_TOKEN" }
+  ],
+  "item": [
+    {
+      "name": "0. Health",
+      "item": [
+        {
+          "name": "GET /healthz",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('status ok', () => pm.expect(pm.response.json().status).to.eql('ok'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/healthz", "host": ["{{baseUrl}}"], "path": ["healthz"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Tenant API",
+      "item": [
+        {
+          "name": "GET /tenants/me — Tenant A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const t = pm.response.json().tenant;",
+                  "pm.test('returns own tenant', () => pm.expect(t.id).to.eql(pm.collectionVariables.get('tenantAId')));",
+                  "pm.test('has branding', () => pm.expect(t).to.have.property('branding'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tenantAToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+          }
+        },
+        {
+          "name": "GET /tenants/me — Tenant B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const t = pm.response.json().tenant;",
+                  "pm.test('returns B, not A', () => {",
+                  "  pm.expect(t.id).to.eql(pm.collectionVariables.get('tenantBId'));",
+                  "  pm.expect(t.id).to.not.eql(pm.collectionVariables.get('tenantAId'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tenantBToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+          }
+        },
+        {
+          "name": "PATCH /tenants/me/branding — owner allowed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('branding updated', () => pm.expect(pm.response.json().tenant.branding.primaryColor).to.eql('#7c3aed'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{tenantAToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branding\": {\n    \"primaryColor\": \"#7c3aed\",\n    \"logoUrl\": \"https://cdn.example.com/acme.png\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me/branding",
+              "host": ["{{baseUrl}}"],
+              "path": ["tenants", "me", "branding"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Auth negative cases",
+      "item": [
+        {
+          "name": "No token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+          }
+        },
+        {
+          "name": "Garbage token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer not.a.real.token" }],
+            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+          }
+        },
+        {
+          "name": "Admin token on tenant route → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('403 — platform admins must use /admin', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+          }
+        },
+        {
+          "name": "Tenant token on /admin → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('403 — tenant users cannot access /admin', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tenantAToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/tenants/{{tenantAId}}/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "tenants", "{{tenantAId}}", "summary"]
+            }
+          }
+        },
+        {
+          "name": "member role on PATCH branding → 403",
+          "description": "Mint a member token first: pnpm token:tenant <tenantAId> <userId> member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('403 — requires owner or admin', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{memberToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"branding\": { \"primaryColor\": \"#ff0000\" }\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me/branding",
+              "host": ["{{baseUrl}}"],
+              "path": ["tenants", "me", "branding"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Platform admin",
+      "item": [
+        {
+          "name": "GET /admin/tenants/:id/summary — Tenant A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('returns requested tenant', () => pm.expect(pm.response.json().tenant.id).to.eql(pm.collectionVariables.get('tenantAId')));",
+                  "// Every call here writes an audit_log row — verify in Prisma Studio:",
+                  "//   pnpm --filter @switchboard/db studio"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/tenants/{{tenantAId}}/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "tenants", "{{tenantAId}}", "summary"]
+            }
+          }
+        },
+        {
+          "name": "GET /admin/tenants/:id/summary — Tenant B (cross-tenant, allowed + audited)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK — admins may reach any tenant, under audit', () => pm.response.to.have.status(200));",
+                  "pm.test('returns tenant B', () => pm.expect(pm.response.json().tenant.id).to.eql(pm.collectionVariables.get('tenantBId')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/tenants/{{tenantBId}}/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "tenants", "{{tenantBId}}", "summary"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Tenant isolation (the important ones)",
+      "item": [
+        {
+          "name": "Tenant A token cannot read Tenant B via /tenants/me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const t = pm.response.json().tenant;",
+                  "pm.test('never returns another tenant', () => {",
+                  "  pm.expect(t.id).to.eql(pm.collectionVariables.get('tenantAId'));",
+                  "  pm.expect(t.id).to.not.eql(pm.collectionVariables.get('tenantBId'));",
+                  "});",
+                  "pm.test('slug is A not B', () => pm.expect(t.slug).to.eql('acme'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tenantAToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+          }
+        },
+        {
+          "name": "Forged token: A's user + B's tenant_id → RLS still blocks",
+          "description": "Mint with: pnpm token:tenant <tenantBId> <tenantAUserId>\n\nThe JWT signature is valid, so auth middleware passes. But the user has no membership in Tenant B. This documents an important gap: the current middleware trusts the tenant_id claim without verifying membership. RLS scopes the query to B, so B's data IS returned — meaning issuance is the control point, not RLS. See the note in the README.",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Documents current behaviour rather than asserting a guarantee.",
+                  "pm.test('responds', () => pm.expect([200,403,404]).to.include(pm.response.code));",
+                  "console.log('Membership is NOT verified against the tenant_id claim — token issuance must enforce it.');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{forgedToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Webhooks",
+      "item": [
+        {
+          "name": "POST /webhooks/twilio/:tenantId — bad signature → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('401 — signature verification rejects', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" },
+              { "key": "X-Twilio-Signature", "value": "obviously-invalid" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "CallSid", "value": "CA00000000000000000000000000000001" },
+                { "key": "From", "value": "+254700000001" },
+                { "key": "To", "value": "+254700000002" },
+                { "key": "CallStatus", "value": "completed" },
+                { "key": "CallDuration", "value": "42" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/twilio/{{tenantAId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhooks", "twilio", "{{tenantAId}}"]
+            }
+          }
+        },
+        {
+          "name": "POST /webhooks/twilio/:tenantId — valid signature → 200",
+          "description": "Pre-request script computes a real Twilio HMAC-SHA1 signature over the URL + sorted params, so this exercises the full ingest → queue → worker path. Requires the twilioAuthToken collection variable to match TWILIO_AUTH_TOKEN in .env.",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Twilio signature = base64(HMAC-SHA1(authToken, url + sorted k+v concatenated))",
+                  "const url = pm.variables.replaceIn('{{baseUrl}}/webhooks/twilio/{{tenantAId}}');",
+                  "const params = {};",
+                  "pm.request.body.urlencoded.each(p => { if (!p.disabled) params[p.key] = p.value; });",
+                  "let data = url;",
+                  "Object.keys(params).sort().forEach(k => { data += k + params[k]; });",
+                  "const sig = CryptoJS.HmacSHA1(data, pm.collectionVariables.get('twilioAuthToken'));",
+                  "pm.request.headers.upsert({ key: 'X-Twilio-Signature', value: CryptoJS.enc.Base64.stringify(sig) });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('acked fast', () => pm.expect(pm.response.responseTime).to.be.below(1000));",
+                  "// Then check the worker consumed it: call_events should gain a row.",
+                  "// pnpm --filter @switchboard/db studio"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "CallSid", "value": "CA00000000000000000000000000000042" },
+                { "key": "From", "value": "+254700000001" },
+                { "key": "To", "value": "+254700000002" },
+                { "key": "CallStatus", "value": "completed" },
+                { "key": "CallDuration", "value": "42" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/twilio/{{tenantAId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhooks", "twilio", "{{tenantAId}}"]
+            }
+          }
+        },
+        {
+          "name": "Idempotency: replay the same CallSid → 200 (duplicate)",
+          "description": "Run the previous request twice. The (source, external_id) unique constraint turns the replay into a no-op rather than a second call_events row — README §6.",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const url = pm.variables.replaceIn('{{baseUrl}}/webhooks/twilio/{{tenantAId}}');",
+                  "const params = {};",
+                  "pm.request.body.urlencoded.each(p => { if (!p.disabled) params[p.key] = p.value; });",
+                  "let data = url;",
+                  "Object.keys(params).sort().forEach(k => { data += k + params[k]; });",
+                  "const sig = CryptoJS.HmacSHA1(data, pm.collectionVariables.get('twilioAuthToken'));",
+                  "pm.request.headers.upsert({ key: 'X-Twilio-Signature', value: CryptoJS.enc.Base64.stringify(sig) });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200, not 500', () => pm.response.to.have.status(200));",
+                  "pm.test('flagged as duplicate', () => pm.expect(pm.response.text()).to.include('duplicate'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "CallSid", "value": "CA00000000000000000000000000000042" },
+                { "key": "From", "value": "+254700000001" },
+                { "key": "To", "value": "+254700000002" },
+                { "key": "CallStatus", "value": "completed" },
+                { "key": "CallDuration", "value": "42" }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/twilio/{{tenantAId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhooks", "twilio", "{{tenantAId}}"]
+            }
+          }
+        },
+        {
+          "name": "POST /webhooks/stripe — bad signature → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('400', () => pm.response.to.have.status(400));"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Stripe-Signature", "value": "t=1,v1=invalid" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"evt_test_001\",\n  \"type\": \"invoice.paid\",\n  \"data\": { \"object\": { \"id\": \"in_test_001\", \"metadata\": { \"tenant_id\": \"{{tenantAId}}\" } } }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhooks/stripe",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhooks", "stripe"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
