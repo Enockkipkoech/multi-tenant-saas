@@ -1,28 +1,32 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 
 /**
- * Base Prisma client. 
+ * One base client per process. Prisma pools connections internally; keep
+ * `connection_limit` low per replica in DATABASE_URL, since Supavisor
+ * multiplexes on top of this (README §7 load-balancing section).
  */
 const basePrisma = new PrismaClient();
 
-//
+/**
+ * Tenant-scoped client. The `tenantId` is set in the Postgres session for RLS policies to enforce isolation. 
+ */
 export function forTenant(tenantId: string) {
+  // The object form of defineExtension, not the callback form, deliberately.
+  //
 
-  return Prisma.defineExtension((_client: PrismaClient) =>
-    _client.$extends({
-      query: {
-        $allModels: {
-          async $allOperations({ args, query }) {
-            const [, result] = await basePrisma.$transaction([
-              basePrisma.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, TRUE)`,
-              query(args),
-            ]);
-            return result;
-          },
+  return Prisma.defineExtension({
+    query: {
+      $allModels: {
+        async $allOperations({ args, query }) {
+          const [, result] = await basePrisma.$transaction([
+            basePrisma.$executeRaw`SELECT set_config('app.tenant_id', ${tenantId}, TRUE)`,
+            query(args),
+          ]);
+          return result;
         },
       },
-    })
-  );
+    },
+  });
 }
 
 export type TenantPrismaClient = ReturnType<typeof getTenantPrisma>;
@@ -32,7 +36,7 @@ export function getTenantPrisma(tenantId: string) {
 }
 
 /**
- * Unscoped client — for use in admin tasks (e.g., the worker, or a CLI). The worker
+ * Unscoped client — no tenant ID is set, so RLS policies will block all reads/writes.is
  */
 export const adminPrisma = basePrisma;
 
@@ -40,7 +44,10 @@ export { Prisma };
 export type { PrismaClient };
 
 /**
- * Detects a unique-constraint violation error from Prisma. 
+ * Postgres unique-constraint violation (Prisma error code P2002).
+ *
+ * This is a common error when trying to insert a row with a duplicate value
+ * in a column that has a unique constraint.
  */
 export function isUniqueViolation(err: unknown): boolean {
   return (
@@ -51,11 +58,8 @@ export function isUniqueViolation(err: unknown): boolean {
   );
 }
 
-/** JSON-compatible value accepted by Prisma Json columns. */
-export type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+/**
+ * JSON value accepted by Prisma `Json` columns.
+ *
+ */
+export type JsonValue = Prisma.InputJsonValue;
