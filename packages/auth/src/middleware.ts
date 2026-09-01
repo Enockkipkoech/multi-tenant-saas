@@ -4,13 +4,13 @@ import {
   isPlatformClaims,
   runWithTenantContext,
   type Role,
-} from "@switchboard/shared";
+} from "@multitenant-saas/shared";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      claims?: import("@switchboard/shared").JwtClaims;
+      claims?: import("@multitenant-saas/shared").JwtClaims;
     }
   }
 }

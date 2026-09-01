@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticateTenant, requireRole } from "@switchboard/auth";
-import { getTenantPrisma } from "@switchboard/db";
-import { getTenantContext } from "@switchboard/shared";
+import { authenticateTenant, requireRole } from "@multitenant-saas/auth";
+import { getTenantPrisma } from "@multitenant-saas/db";
+import { getTenantContext } from "@multitenant-saas/shared";
 
 export const tenantRouter: Router = Router();
 

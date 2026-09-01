@@ -1,5 +1,5 @@
 {
-  "name": "@switchboard/db",
+  "name": "@multitenant-saas/db",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "@switchboard/shared": "workspace:*"
+    "@multitenant-saas/shared": "workspace:*"
   },
   "devDependencies": {
-    "@switchboard/tsconfig": "workspace:*",
+    "@multitenant-saas/tsconfig": "workspace:*",
     "@types/node": "^22.7.5",
     "dotenv-cli": "^7.4.2",
     "prisma": "5.22.0",

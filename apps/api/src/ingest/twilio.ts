@@ -1,8 +1,8 @@
 import { Router, raw } from "express";
 import twilio from "twilio";
-import { loadEnv } from "@switchboard/shared";
-import { getTenantPrisma, isUniqueViolation } from "@switchboard/db";
-import { getQueue } from "@switchboard/queue";
+import { loadEnv } from "@multitenant-saas/shared";
+import { getTenantPrisma, isUniqueViolation } from "@multitenant-saas/db";
+import { getQueue } from "@multitenant-saas/queue";
 
 export const twilioIngestRouter: Router = Router();
 

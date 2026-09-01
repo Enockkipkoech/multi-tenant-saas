@@ -1,5 +1,5 @@
 import express from "express";
-import { loadEnv } from "@switchboard/shared";
+import { loadEnv } from "@multitenant-saas/shared";
 import { tenantRouter } from "./routes/tenants.js";
 import { adminRouter } from "./routes/admin.js";
 import { twilioIngestRouter } from "./ingest/twilio.js";

@@ -16,8 +16,8 @@ RUN pnpm install --frozen-lockfile
 
 FROM deps AS build
 COPY . .
-RUN pnpm --filter @switchboard/db generate
-RUN pnpm turbo run build --filter=@switchboard/api...
+RUN pnpm --filter @multitenant-saas/db generate
+RUN pnpm turbo run build --filter=@multitenant-saas/api...
 
 # openssl is required by Prisma's query engine at runtime.
 FROM node:20-slim AS runner

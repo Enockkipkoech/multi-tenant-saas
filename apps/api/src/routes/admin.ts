@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { requirePlatformAdmin } from "@switchboard/auth";
-import { adminPrisma, getTenantPrisma } from "@switchboard/db";
-import { getTenantContext } from "@switchboard/shared";
+import { requirePlatformAdmin } from "@multitenant-saas/auth";
+import { adminPrisma, getTenantPrisma } from "@multitenant-saas/db";
+import { getTenantContext } from "@multitenant-saas/shared";
 
 export const adminRouter: Router = Router();
 

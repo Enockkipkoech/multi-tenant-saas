@@ -1,5 +1,5 @@
 {
-  "name": "@switchboard/billing",
+  "name": "@multitenant-saas/billing",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "stripe": "^17.2.1",
-    "@switchboard/shared": "workspace:*",
-    "@switchboard/db": "workspace:*"
+    "@multitenant-saas/shared": "workspace:*",
+    "@multitenant-saas/db": "workspace:*"
   },
   "devDependencies": {
-    "@switchboard/tsconfig": "workspace:*",
+    "@multitenant-saas/tsconfig": "workspace:*",
     "typescript": "^5.6.3"
   },
   "exports": {

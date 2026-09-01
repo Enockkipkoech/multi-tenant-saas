@@ -1,5 +1,5 @@
 {
-  "extends": "@switchboard/tsconfig/base.json",
+  "extends": "@multitenant-saas/tsconfig/base.json",
   "compilerOptions": { "outDir": "dist", "rootDir": "src" },
   "include": ["src"]
 }

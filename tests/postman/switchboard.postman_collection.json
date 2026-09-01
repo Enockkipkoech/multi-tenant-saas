@@ -5,13 +5,34 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3000" },
-    { "key": "tenantAToken", "value": "PASTE_TENANT_A_JWT" },
-    { "key": "tenantBToken", "value": "PASTE_TENANT_B_JWT" },
-    { "key": "adminToken", "value": "PASTE_ADMIN_JWT" },
-    { "key": "tenantAId", "value": "PASTE_TENANT_A_ID" },
-    { "key": "tenantBId", "value": "PASTE_TENANT_B_ID" },
-    { "key": "twilioAuthToken", "value": "PASTE_TWILIO_AUTH_TOKEN" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "tenantAToken",
+      "value": "PASTE_TENANT_A_JWT"
+    },
+    {
+      "key": "tenantBToken",
+      "value": "PASTE_TENANT_B_JWT"
+    },
+    {
+      "key": "adminToken",
+      "value": "PASTE_ADMIN_JWT"
+    },
+    {
+      "key": "tenantAId",
+      "value": "PASTE_TENANT_A_ID"
+    },
+    {
+      "key": "tenantBId",
+      "value": "PASTE_TENANT_B_ID"
+    },
+    {
+      "key": "twilioAuthToken",
+      "value": "PASTE_TWILIO_AUTH_TOKEN"
+    }
   ],
   "item": [
     {
@@ -33,7 +54,15 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{baseUrl}}/healthz", "host": ["{{baseUrl}}"], "path": ["healthz"] }
+            "url": {
+              "raw": "{{baseUrl}}/healthz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "healthz"
+              ]
+            }
           }
         }
       ]
@@ -58,8 +87,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tenantAToken}}" }],
-            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantAToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me"
+              ]
+            }
           }
         },
         {
@@ -81,8 +124,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tenantBToken}}" }],
-            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantBToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me"
+              ]
+            }
           }
         },
         {
@@ -101,8 +158,14 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{tenantAToken}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantAToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -110,8 +173,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tenants/me/branding",
-              "host": ["{{baseUrl}}"],
-              "path": ["tenants", "me", "branding"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me",
+                "branding"
+              ]
             }
           }
         }
@@ -125,13 +194,26 @@
           "event": [
             {
               "listen": "test",
-              "script": { "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] }
+              "script": {
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
             }
           ],
           "request": {
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me"
+              ]
+            }
           }
         },
         {
@@ -139,13 +221,31 @@
           "event": [
             {
               "listen": "test",
-              "script": { "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] }
+              "script": {
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
             }
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer not.a.real.token" }],
-            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer not.a.real.token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me"
+              ]
+            }
           }
         },
         {
@@ -162,8 +262,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
-            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me"
+              ]
+            }
           }
         },
         {
@@ -180,11 +294,23 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tenantAToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantAToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/admin/tenants/{{tenantAId}}/summary",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "tenants", "{{tenantAId}}", "summary"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "tenants",
+                "{{tenantAId}}",
+                "summary"
+              ]
             }
           }
         },
@@ -204,14 +330,29 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{memberToken}}" },
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{memberToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
-            "body": { "mode": "raw", "raw": "{\n  \"branding\": { \"primaryColor\": \"#ff0000\" }\n}" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branding\": { \"primaryColor\": \"#ff0000\" }\n}"
+            },
             "url": {
               "raw": "{{baseUrl}}/tenants/me/branding",
-              "host": ["{{baseUrl}}"],
-              "path": ["tenants", "me", "branding"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me",
+                "branding"
+              ]
             }
           }
         }
@@ -230,18 +371,30 @@
                   "pm.test('200 OK', () => pm.response.to.have.status(200));",
                   "pm.test('returns requested tenant', () => pm.expect(pm.response.json().tenant.id).to.eql(pm.collectionVariables.get('tenantAId')));",
                   "// Every call here writes an audit_log row — verify in Prisma Studio:",
-                  "//   pnpm --filter @switchboard/db studio"
+                  "//   pnpm --filter @multitenant-saas/db studio"
                 ]
               }
             }
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/admin/tenants/{{tenantAId}}/summary",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "tenants", "{{tenantAId}}", "summary"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "tenants",
+                "{{tenantAId}}",
+                "summary"
+              ]
             }
           }
         },
@@ -260,11 +413,23 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
             "url": {
               "raw": "{{baseUrl}}/admin/tenants/{{tenantBId}}/summary",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "tenants", "{{tenantBId}}", "summary"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "tenants",
+                "{{tenantBId}}",
+                "summary"
+              ]
             }
           }
         }
@@ -292,8 +457,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tenantAToken}}" }],
-            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tenantAToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me"
+              ]
+            }
           }
         },
         {
@@ -313,8 +492,22 @@
           ],
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{forgedToken}}" }],
-            "url": { "raw": "{{baseUrl}}/tenants/me", "host": ["{{baseUrl}}"], "path": ["tenants", "me"] }
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{forgedToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tenants/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tenants",
+                "me"
+              ]
+            }
           }
         }
       ]
@@ -337,23 +530,50 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" },
-              { "key": "X-Twilio-Signature", "value": "obviously-invalid" }
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              },
+              {
+                "key": "X-Twilio-Signature",
+                "value": "obviously-invalid"
+              }
             ],
             "body": {
               "mode": "urlencoded",
               "urlencoded": [
-                { "key": "CallSid", "value": "CA00000000000000000000000000000001" },
-                { "key": "From", "value": "+254700000001" },
-                { "key": "To", "value": "+254700000002" },
-                { "key": "CallStatus", "value": "completed" },
-                { "key": "CallDuration", "value": "42" }
+                {
+                  "key": "CallSid",
+                  "value": "CA00000000000000000000000000000001"
+                },
+                {
+                  "key": "From",
+                  "value": "+254700000001"
+                },
+                {
+                  "key": "To",
+                  "value": "+254700000002"
+                },
+                {
+                  "key": "CallStatus",
+                  "value": "completed"
+                },
+                {
+                  "key": "CallDuration",
+                  "value": "42"
+                }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/webhooks/twilio/{{tenantAId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["webhooks", "twilio", "{{tenantAId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhooks",
+                "twilio",
+                "{{tenantAId}}"
+              ]
             }
           }
         },
@@ -383,28 +603,54 @@
                   "pm.test('200 OK', () => pm.response.to.have.status(200));",
                   "pm.test('acked fast', () => pm.expect(pm.response.responseTime).to.be.below(1000));",
                   "// Then check the worker consumed it: call_events should gain a row.",
-                  "// pnpm --filter @switchboard/db studio"
+                  "// pnpm --filter @multitenant-saas/db studio"
                 ]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
             "body": {
               "mode": "urlencoded",
               "urlencoded": [
-                { "key": "CallSid", "value": "CA00000000000000000000000000000042" },
-                { "key": "From", "value": "+254700000001" },
-                { "key": "To", "value": "+254700000002" },
-                { "key": "CallStatus", "value": "completed" },
-                { "key": "CallDuration", "value": "42" }
+                {
+                  "key": "CallSid",
+                  "value": "CA00000000000000000000000000000042"
+                },
+                {
+                  "key": "From",
+                  "value": "+254700000001"
+                },
+                {
+                  "key": "To",
+                  "value": "+254700000002"
+                },
+                {
+                  "key": "CallStatus",
+                  "value": "completed"
+                },
+                {
+                  "key": "CallDuration",
+                  "value": "42"
+                }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/webhooks/twilio/{{tenantAId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["webhooks", "twilio", "{{tenantAId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhooks",
+                "twilio",
+                "{{tenantAId}}"
+              ]
             }
           }
         },
@@ -438,21 +684,47 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/x-www-form-urlencoded" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
             "body": {
               "mode": "urlencoded",
               "urlencoded": [
-                { "key": "CallSid", "value": "CA00000000000000000000000000000042" },
-                { "key": "From", "value": "+254700000001" },
-                { "key": "To", "value": "+254700000002" },
-                { "key": "CallStatus", "value": "completed" },
-                { "key": "CallDuration", "value": "42" }
+                {
+                  "key": "CallSid",
+                  "value": "CA00000000000000000000000000000042"
+                },
+                {
+                  "key": "From",
+                  "value": "+254700000001"
+                },
+                {
+                  "key": "To",
+                  "value": "+254700000002"
+                },
+                {
+                  "key": "CallStatus",
+                  "value": "completed"
+                },
+                {
+                  "key": "CallDuration",
+                  "value": "42"
+                }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/webhooks/twilio/{{tenantAId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["webhooks", "twilio", "{{tenantAId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhooks",
+                "twilio",
+                "{{tenantAId}}"
+              ]
             }
           }
         },
@@ -461,14 +733,24 @@
           "event": [
             {
               "listen": "test",
-              "script": { "exec": ["pm.test('400', () => pm.response.to.have.status(400));"] }
+              "script": {
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400));"
+                ]
+              }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Stripe-Signature", "value": "t=1,v1=invalid" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Stripe-Signature",
+                "value": "t=1,v1=invalid"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -476,8 +758,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/webhooks/stripe",
-              "host": ["{{baseUrl}}"],
-              "path": ["webhooks", "stripe"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "webhooks",
+                "stripe"
+              ]
             }
           }
         }

@@ -1,7 +1,7 @@
 import { Router, raw } from "express";
-import { verifyStripeSignature } from "@switchboard/billing";
-import { getTenantPrisma, isUniqueViolation, type JsonValue } from "@switchboard/db";
-import { getQueue } from "@switchboard/queue";
+import { verifyStripeSignature } from "@multitenant-saas/billing";
+import { getTenantPrisma, isUniqueViolation, type JsonValue } from "@multitenant-saas/db";
+import { getQueue } from "@multitenant-saas/queue";
 
 export const stripeIngestRouter: Router = Router();
 

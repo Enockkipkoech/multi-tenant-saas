@@ -30,8 +30,8 @@ async function main() {
   const globex = await seedTenant({ name: "Globex", slug: "globex", userEmail: "owner@globex.test" });
 
   const admin = await adminPrisma.platformAdmin.upsert({
-    where: { email: "ops@switchboard.test" },
-    create: { id: randomUUID(), email: "ops@switchboard.test", platformRole: "support" },
+    where: { email: "ops@multitenant-saas.test" },
+    create: { id: randomUUID(), email: "ops@multitenant-saas.test", platformRole: "support" },
     update: {},
   });
 

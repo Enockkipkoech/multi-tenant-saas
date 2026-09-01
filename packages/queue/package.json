@@ -1,5 +1,5 @@
 {
-  "name": "@switchboard/queue",
+  "name": "@multitenant-saas/queue",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "graphile-worker": "^0.16.6",
-    "@switchboard/shared": "workspace:*"
+    "@multitenant-saas/shared": "workspace:*"
   },
   "devDependencies": {
-    "@switchboard/tsconfig": "workspace:*",
+    "@multitenant-saas/tsconfig": "workspace:*",
     "typescript": "^5.6.3",
     "@types/node": "^22.7.5"
   },

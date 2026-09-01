@@ -1,4 +1,4 @@
-import { loadEnv } from "@switchboard/shared";
+import { loadEnv } from "@multitenant-saas/shared";
 import { PostgresQueue, PostgresWorker } from "./postgres.js";
 import { SqsQueue, SqsWorker } from "./sqs.js";
 import type { Queue, Worker } from "./types.js";

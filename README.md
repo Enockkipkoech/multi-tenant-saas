@@ -25,8 +25,8 @@ pnpm dev                    # runs api + worker together, via turbo
 
 Individual services:
 ```bash
-pnpm --filter @switchboard/api dev
-pnpm --filter @switchboard/worker dev
+pnpm --filter @multitenant-saas/api dev
+pnpm --filter @multitenant-saas/worker dev
 ```
 
 Type-check, build, and test the whole workspace:

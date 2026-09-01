@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { loadEnv } from "@switchboard/shared";
+import { loadEnv } from "@multitenant-saas/shared";
 
 let stripeClient: Stripe | undefined;
 

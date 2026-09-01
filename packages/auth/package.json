@@ -1,5 +1,5 @@
 {
-  "name": "@switchboard/auth",
+  "name": "@multitenant-saas/auth",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "jsonwebtoken": "^9.0.2",
-    "@switchboard/shared": "workspace:*"
+    "@multitenant-saas/shared": "workspace:*"
   },
   "devDependencies": {
-    "@switchboard/tsconfig": "workspace:*",
+    "@multitenant-saas/tsconfig": "workspace:*",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/express": "^4.17.21",
     "typescript": "^5.6.3"

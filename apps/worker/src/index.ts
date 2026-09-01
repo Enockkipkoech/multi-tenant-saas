@@ -1,4 +1,4 @@
-import { getWorker } from "@switchboard/queue";
+import { getWorker } from "@multitenant-saas/queue";
 import { registerProcessors } from "./processors/index.js";
 
 const worker = getWorker();

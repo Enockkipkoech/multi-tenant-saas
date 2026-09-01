@@ -1,5 +1,5 @@
-import { getTenantPrisma } from "@switchboard/db";
-import type { Job, JobHandler } from "@switchboard/queue";
+import { getTenantPrisma } from "@multitenant-saas/db";
+import type { Job, JobHandler } from "@multitenant-saas/queue";
 
 interface TwilioCallPayload {
   CallSid?: string;

@@ -1,5 +1,5 @@
 import { run, quickAddJob, type Runner, type Task } from "graphile-worker";
-import { loadEnv } from "@switchboard/shared";
+import { loadEnv } from "@multitenant-saas/shared";
 import type { Job, JobHandler, JobPayload, Queue, Worker } from "./types.js";
 
 /**

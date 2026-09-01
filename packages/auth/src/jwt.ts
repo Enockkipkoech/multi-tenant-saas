@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { loadEnv, type JwtClaims } from "@switchboard/shared";
+import { loadEnv, type JwtClaims } from "@multitenant-saas/shared";
 
 export function verifyJwt(token: string): JwtClaims {
   const env = loadEnv();

@@ -1,4 +1,4 @@
-import { loadEnv } from "@switchboard/shared";
+import { loadEnv } from "@multitenant-saas/shared";
 
 /**
  * Plaid stub — used for tenants linking a bank account directly rather

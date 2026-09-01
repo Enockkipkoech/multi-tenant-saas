@@ -1,5 +1,5 @@
 {
-  "name": "@switchboard/shared",
+  "name": "@multitenant-saas/shared",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@switchboard/tsconfig": "workspace:*",
+    "@multitenant-saas/tsconfig": "workspace:*",
     "typescript": "^5.6.3",
     "@types/node": "^22.7.5"
   },

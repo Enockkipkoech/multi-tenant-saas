@@ -1,5 +1,5 @@
 {
-  "name": "@switchboard/api",
+  "name": "@multitenant-saas/api",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -13,14 +13,14 @@
   "dependencies": {
     "express": "^4.21.0",
     "twilio": "^5.3.4",
-    "@switchboard/shared": "workspace:*",
-    "@switchboard/db": "workspace:*",
-    "@switchboard/auth": "workspace:*",
-    "@switchboard/queue": "workspace:*",
-    "@switchboard/billing": "workspace:*"
+    "@multitenant-saas/shared": "workspace:*",
+    "@multitenant-saas/db": "workspace:*",
+    "@multitenant-saas/auth": "workspace:*",
+    "@multitenant-saas/queue": "workspace:*",
+    "@multitenant-saas/billing": "workspace:*"
   },
   "devDependencies": {
-    "@switchboard/tsconfig": "workspace:*",
+    "@multitenant-saas/tsconfig": "workspace:*",
     "@types/express": "^4.17.21",
     "tsx": "^4.19.1",
     "typescript": "^5.6.3",
