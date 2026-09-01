@@ -1,5 +1,5 @@
 # Official provider — manages project/org-level settings only. Table
-# schema + RLS policies live in db/migrations/, not here (README §7).
+# schema + RLS policies live in db/migrations/
 terraform {
   required_providers {
     supabase = {

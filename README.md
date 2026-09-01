@@ -1,5 +1,8 @@
 ## Multi-Tenant SaaS Backend Architecture
 
+### GITHUB REPO: multi-tenant-saas
+By EnockKipkoech (https://github.com/Enockkipkoech/multi-tenant-saas)
+
 ## Design Diagram
 See [architecture diagrams](docs/Multi-tenant-saas-compiled-Architecture.svg#resource-model) — pooled resource model, ERD, webhook dataflow, and the deployment infrastructure.
 
@@ -102,8 +105,39 @@ Tenant users authenticate into exactly one tenant per request, by design. Intern
 
 ## 6.0 Scalability & Performance
 
+**Features**
+- Pooled multi-tenancy — one shared stack serves 200+ workspaces; onboarding a tenant is a row insert, not a provisioning job
+- Async event ingest — webhooks are acknowledged in milliseconds and processed off the request path
+- Idempotent event handling — provider redelivery is a no-op, not a double-write
+- Independent scaling of API and worker tiers
+- Per-tenant rate limiting at ingest to contain noisy neighbours
+
+**Implementation**
+- Ingest verifies signature → writes `webhook_events` → enqueues → returns 200; workers drain independently
+- `Queue` / `Worker` interface (`packages/queue`) isolates the driver — the SQS swap is one env var, not a rewrite
+- `SELECT ... FOR UPDATE SKIP LOCKED` lets worker replicas compete for jobs without double-processing
+- Idempotency enforced by a `(source, external_id)` unique constraint; `P2002` returns 200, not 500
+- Composite indexes on `(tenant_id, status)` and `(tenant_id, created_at)` for tenant-scoped reads
+- `connection_limit` capped per replica; Supavisor multiplexes so horizontal scaling doesn't exhaust `max_connections`
+- Railway's edge proxy load-balances API replicas; workers scale on queue depth, not request rate
+- Known ceiling: Postgres **writes** scale vertically only — read replicas. 
+
 ## 7.0 Deployment, Infrastructure, and CI/CD
 
+- ROOT ENDPOINT HEALTH CHECK : https://switchboardapi-production.up.railway.app/healthz
+- Deployed on Railway, with two services: `api` and `worker`. Each has its own `railway.json` and `Dockerfile`, allowing independent scaling and deployment.
+
+### Deployment images
+
+1. External API service deployment:
+ <p align="center">
+  <img src="docs/app-api-deployment.png" alt="Railway Dashboard Deployment Image" width="800">
+</p>
+
+2. Internal Worker service deployment:
+<p align="center">
+  <img src="docs/worker-api-depoyment.png" alt="Worker API Deployment Image" width="800">
+</p>
 
 ## 8.0 Testing -  Bash nd postman tests
 

@@ -1,7 +1,6 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
 
-// Verifies the Phase 1 -> Phase 2 driver swap (README §7) actually swaps
-// implementations based on QUEUE_DRIVER, without needing a real DB or AWS.
+// Tests that getQueue() returns the correct queue implementation based on the QUEUE_DRIVER environment variable.
 describe("getQueue driver selection", () => {
   beforeEach(() => {
     vi.resetModules();

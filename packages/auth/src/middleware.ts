@@ -22,7 +22,7 @@ function extractBearerToken(req: Request): string | null {
 }
 
 /**
- * Tenant-facing auth (README §5). Requires a tenant_id claim — platform
+ * Tenant-facing auth. Requires a tenant_id claim — platform
  * admin tokens are rejected here, they use requirePlatformAdmin instead.
  * On success, sets AsyncLocalStorage tenant context for the rest of the
  * request so packages/db can scope RLS without threading tenantId manually.
@@ -71,7 +71,7 @@ export function requireRole(...allowed: Role[]) {
 }
 
 /**
- * Platform-admin auth (README §5 admin subsection). Requires a
+ * Platform-admin auth admin subsection). Requires a
  * platform_role claim and no ambient tenant_id — the admin selects a
  * tenant explicitly per action via req.body.tenantId / req.params.tenantId,
  * handled in the route, not here, and every selection is written to

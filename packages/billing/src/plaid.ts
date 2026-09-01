@@ -2,7 +2,7 @@ import { loadEnv } from "@switchboard/shared";
 
 /**
  * Plaid stub — used for tenants linking a bank account directly rather
- * than a card (README §5, payment_methods.provider = 'plaid'). Full
+ * than a card (payment_methods.provider = 'plaid'). Full
  * Link-token + exchange-token flow intentionally left out of this
  * scaffold; wire in `plaid` npm package here when a tenant flow needs it.
  */

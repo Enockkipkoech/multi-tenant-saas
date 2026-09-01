@@ -67,7 +67,7 @@ ALTER TABLE "jobs" FORCE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation ON "jobs"
   USING (tenant_id = current_setting('app.tenant_id', true)::uuid);
 
--- platform_admins / audit_log are intentionally NOT tenant-scoped (README §5).
+-- platform_admins / audit_log are intentionally NOT tenant-scoped.
 -- Access is gated at the application layer by requirePlatformAdmin(), and
 -- every cross-tenant action writes an audit_log row. Enabling a tenant_id
 -- policy here would be wrong: an admin's whole purpose is to act across

@@ -19,7 +19,7 @@ app.get("/healthz", (_req, res) => res.status(200).json({ status: "Success. Mult
 // Tenant-facing API surface — every route here goes through authenticateTenant().
 app.use("/tenants", tenantRouter);
 
-// Platform-admin surface — separate route, separate auth, audited (README §5).
+// Platform-admin surface — separate route, separate auth, audited
 app.use("/admin", adminRouter);
 
 app.listen(env.PORT, () => {

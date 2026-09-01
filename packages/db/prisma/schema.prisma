@@ -138,7 +138,7 @@ model WebhookEvent {
   callEvents CallEvent[]
   smsEvents  SmsEvent[]
 
-  // Idempotency anchor — README §6: duplicate provider delivery is a no-op.
+  // Idempotency anchor — duplicate provider delivery is a no-op.
   @@unique([source, externalId])
   @@index([tenantId, status])
   @@map("webhook_events")
@@ -196,7 +196,7 @@ model Job {
   @@map("jobs")
 }
 
-// Deliberately NOT tenant-owned (README §3/§5): platform_admins has no
+// Deliberately NOT tenant-owned: platform_admins has no
 // tenant_id at all; audit_log carries tenant_id only as a record of what
 // was touched, never as an RLS access boundary.
 model PlatformAdmin {

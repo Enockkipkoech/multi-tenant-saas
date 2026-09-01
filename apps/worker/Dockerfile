@@ -1,5 +1,5 @@
 # Same shape as apps/api/Dockerfile — this is the service that gets retired
-# in favor of Fargate in Phase 2 (README §7); keeping it containerized now
+# in favor of Fargate keeping it containerized now
 # means that swap changes deployment target, not build tooling.
 FROM node:20-slim AS base
 RUN corepack enable

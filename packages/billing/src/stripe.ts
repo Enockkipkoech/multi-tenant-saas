@@ -27,7 +27,7 @@ export function verifyStripeSignature(rawBody: Buffer, signatureHeader: string):
 /**
  * Stripe retries webhook delivery on anything but a 2xx, and can deliver
  * the same event more than once. Idempotency keyed on event.id, checked
- * against webhook_events.external_id before processing (README §5/§6) —
+ * against webhook_events.external_id before processing —
  * duplicate delivery becomes a no-op, not a double-write.
  */
 export function isDuplicateStripeEvent(_eventId: string): Promise<boolean> {

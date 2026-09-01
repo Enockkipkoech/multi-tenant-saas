@@ -1,11 +1,5 @@
-// Seeds two tenants so tenant isolation is actually testable (README §3).
-//
-// Note the chicken-and-egg this has to solve: with FORCE ROW LEVEL SECURITY
-// and a USING-only policy, Postgres reuses USING as the INSERT's WITH CHECK.
-// So a row can only be inserted into `tenants` when app.tenant_id already
-// equals the id being inserted. We therefore generate the UUID client-side
-// and go through getTenantPrisma(id), which sets app.tenant_id before the
-// insert. That the seed has to do this is itself evidence RLS is enforced.
+// Seeds two tenants so tenant isolation is actually testable.
+// Also seeds a platform admin so the admin auth path is testable.
 import { randomUUID } from "node:crypto";
 import { adminPrisma, getTenantPrisma } from "../packages/db/src/index.js";
 

@@ -30,7 +30,7 @@ if (kind === "tenant") {
     console.error("usage: mint-jwt.mjs admin <adminId> [support|billing_ops|superadmin]");
     process.exit(1);
   }
-  // PlatformJwtClaims — note: no tenant_id claim. That's the whole point (README §5).
+  // PlatformJwtClaims — note: no tenant_id claim. That's the whole point.
   console.log(jwt.sign({ sub: adminId, platform_role: platformRole }, secret, { expiresIn: "7d" }));
 } else {
   console.error("usage: mint-jwt.mjs <tenant|admin> ...");

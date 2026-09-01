@@ -5,7 +5,7 @@ import type { Job, JobHandler, JobPayload, Queue, Worker } from "./types.js";
 /**
  * Phase 1 queue: Postgres via graphile-worker. Uses SELECT ... FOR UPDATE
  * SKIP LOCKED under the hood, so multiple worker replicas can safely
- * compete for jobs (README §7 horizontal scaling table) without double
+ * compete for jobs without double
  * processing. Runs as a second Railway service — no AWS account needed.
  */
 export class PostgresQueue implements Queue {

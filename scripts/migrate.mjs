@@ -1,5 +1,5 @@
 // Minimal migration runner — applies db/migrations/*.sql in order, tracked
-// in a schema_migrations table. Not Terraform's job (README §7) — schema
+// in a schema_migrations table. Not Terraform's job  — schema
 // and RLS live here, applied via SQL tooling.
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";

@@ -3,7 +3,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 /**
  * One base client per process. Prisma pools connections internally; keep
  * `connection_limit` low per replica in DATABASE_URL, since Supavisor
- * multiplexes on top of this (README §7 load-balancing section).
+ * multiplexes on top of thisoad-balancing.
  */
 const basePrisma = new PrismaClient();
 

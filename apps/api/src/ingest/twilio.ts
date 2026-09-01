@@ -52,7 +52,7 @@ twilioIngestRouter.post(
       );
     } catch (err) {
       // P2002 = unique constraint on (source, external_id): Twilio redelivered
-      // an event we already have. Ack it so retries stop (README §6 idempotency).
+      // an event we already have. Ack it so retries stop.
       if (isUniqueViolation(err)) {
         return res.status(200).send("ok (duplicate)");
       }

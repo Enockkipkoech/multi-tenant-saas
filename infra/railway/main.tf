@@ -1,4 +1,4 @@
-# Community-maintained provider — not official Railway/HashiCorp (README §7/§9).
+# Community-maintained provider — not official Railway/HashiCorp
 terraform {
   required_providers {
     railway = {

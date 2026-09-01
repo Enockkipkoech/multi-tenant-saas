@@ -11,9 +11,7 @@ export interface Job<T extends JobPayload = JobPayload> {
 }
 
 /**
- * Implementation-agnostic queue interface (README §4/§7). Phase 1 backs
- * this with Postgres (graphile-worker); Phase 2 swaps in SQS behind the
- * same interface — ingest and worker business logic never change.
+ * Implementation-agnostic queue interface. The queue is responsible for storing jobs and delivering them to workers. The worker is responsible for processing jobs and reporting success/failure back to the queue.
  */
 export interface Queue {
   enqueue(type: string, payload: JobPayload, tenantId: string): Promise<void>;
