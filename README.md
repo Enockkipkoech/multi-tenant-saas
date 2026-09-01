@@ -103,6 +103,8 @@ Tenant users authenticate into exactly one tenant per request, by design. Intern
 
 ## 8.0 Testing -  Bash nd postman tests
 
+### CLI Tests
+
 ```bash
 pnpm seed                                    # prints tenant/user/admin IDs
 pnpm token:tenant <tenantAId> <userAId>      # → tenantAToken
@@ -118,5 +120,22 @@ pnpm test:tenant <tenantAToken>              # runs tests as tenant A user
 pnpm test:tenant <tenantBToken>              # runs tests as tenant B user
 pnpm test:admin <adminToken>                 # runs tests as platform admin
 ```
+
+
+### Test Results
+Seeded. Export these for Postman:
+
+TENANT_A_ID=<Your Tenant A ID>
+TENANT_A_USER=<Your Tenant A User ID>
+TENANT_B_ID=<Your Tenant B ID>
+TENANT_B_USER=<Your Tenant B User ID>
+ADMIN_ID=<Your Admin ID>
+
+
+Mint tokens:
+  pnpm token:tenant <Your Tenant A ID> <Your Tenant A User ID>
+  pnpm token:tenant <Your Tenant B ID> <Your Tenant B User ID>
+  pnpm token:admin <Your Admin ID>
+
 
 

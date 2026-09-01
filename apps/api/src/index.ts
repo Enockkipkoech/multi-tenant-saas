@@ -14,7 +14,7 @@ app.use("/webhooks", stripeIngestRouter);
 
 app.use(express.json());
 
-app.get("/healthz", (_req, res) => res.status(200).json({ status: "ok" }));
+app.get("/healthz", (_req, res) => res.status(200).json({ status: "ok. Multi-tenant SaaS API is running." }));
 
 // Tenant-facing API surface — every route here goes through authenticateTenant().
 app.use("/tenants", tenantRouter);
