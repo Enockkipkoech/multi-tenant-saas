@@ -1,0 +1,229 @@
+// Schema derived from db/migrations/*.sql — same tables as README §3's ERD.
+// Prisma now owns schema + migrations; Terraform still owns nothing here
+// (README §7: infra/ provisions the Supabase project, not its schema).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // migrations bypass the pooler; see README §7
+}
+
+enum MembershipRole {
+  owner
+  admin
+  member
+
+  @@map("membership_role")
+}
+
+enum PlatformRoleType {
+  support
+  billing_ops
+  superadmin
+
+  @@map("platform_role")
+}
+
+model Tenant {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  slug         String   @unique
+  customDomain String?  @unique @map("custom_domain")
+  branding     Json     @default("{}")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  memberships    Membership[]
+  subscriptions  Subscription[]
+  paymentMethods PaymentMethod[]
+  integrations   Integration[]
+  webhookEvents  WebhookEvent[]
+  callEvents     CallEvent[]
+  smsEvents      SmsEvent[]
+  jobs           Job[]
+  auditLogs      AuditLog[]
+
+  @@map("tenants")
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  memberships Membership[]
+
+  @@map("users")
+}
+
+model Membership {
+  id        String         @id @default(uuid()) @db.Uuid
+  tenantId  String         @map("tenant_id") @db.Uuid
+  userId    String         @map("user_id") @db.Uuid
+  role      MembershipRole @default(member)
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@map("memberships")
+}
+
+model Subscription {
+  id                   String    @id @default(uuid()) @db.Uuid
+  tenantId             String    @map("tenant_id") @db.Uuid
+  stripeCustomerId     String    @map("stripe_customer_id")
+  stripeSubscriptionId String?   @unique @map("stripe_subscription_id")
+  plan                 String
+  status               String
+  currentPeriodEnd     DateTime? @map("current_period_end") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  invoices Invoice[]
+
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id              String   @id @default(uuid()) @db.Uuid
+  subscriptionId  String   @map("subscription_id") @db.Uuid
+  stripeInvoiceId String   @unique @map("stripe_invoice_id")
+  amountCents     Int      @map("amount_cents")
+  status          String
+  issuedAt        DateTime @default(now()) @map("issued_at") @db.Timestamptz
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+model PaymentMethod {
+  id         String  @id @default(uuid()) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  provider   String // 'stripe' | 'plaid'
+  externalId String  @map("external_id")
+  isDefault  Boolean @default(false) @map("is_default")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("payment_methods")
+}
+
+model Integration {
+  id                   String @id @default(uuid()) @db.Uuid
+  tenantId             String @map("tenant_id") @db.Uuid
+  provider             String
+  credentialsEncrypted String @map("credentials_encrypted")
+  status               String @default("active")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("integrations")
+}
+
+model WebhookEvent {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  source      String // 'twilio' | 'stripe'
+  externalId  String    @map("external_id")
+  eventType   String    @map("event_type")
+  payload     Json
+  status      String    @default("pending")
+  receivedAt  DateTime  @default(now()) @map("received_at") @db.Timestamptz
+  processedAt DateTime? @map("processed_at") @db.Timestamptz
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  callEvents CallEvent[]
+  smsEvents  SmsEvent[]
+
+  // Idempotency anchor — README §6: duplicate provider delivery is a no-op.
+  @@unique([source, externalId])
+  @@index([tenantId, status])
+  @@map("webhook_events")
+}
+
+model CallEvent {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @map("tenant_id") @db.Uuid
+  webhookEventId String?  @map("webhook_event_id") @db.Uuid
+  twilioCallSid  String   @unique @map("twilio_call_sid")
+  fromNumber     String?  @map("from_number")
+  toNumber       String?  @map("to_number")
+  durationSec    Int?     @map("duration_sec")
+  status         String?
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  webhookEvent WebhookEvent? @relation(fields: [webhookEventId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@map("call_events")
+}
+
+model SmsEvent {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  webhookEventId   String?  @map("webhook_event_id") @db.Uuid
+  twilioMessageSid String   @unique @map("twilio_message_sid")
+  fromNumber       String?  @map("from_number")
+  toNumber         String?  @map("to_number")
+  body             String?
+  status           String?
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  webhookEvent WebhookEvent? @relation(fields: [webhookEventId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@map("sms_events")
+}
+
+model Job {
+  id          String    @id @default(uuid()) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  type        String
+  payload     Json      @default("{}")
+  status      String    @default("pending")
+  attempts    Int       @default(0)
+  runAt       DateTime  @default(now()) @map("run_at") @db.Timestamptz
+  completedAt DateTime? @map("completed_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([status, runAt])
+  @@map("jobs")
+}
+
+// Deliberately NOT tenant-owned (README §3/§5): platform_admins has no
+// tenant_id at all; audit_log carries tenant_id only as a record of what
+// was touched, never as an RLS access boundary.
+model PlatformAdmin {
+  id           String           @id @default(uuid()) @db.Uuid
+  email        String           @unique
+  platformRole PlatformRoleType @map("platform_role")
+  createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz
+
+  auditLogs AuditLog[]
+
+  @@map("platform_admins")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  adminId   String   @map("admin_id") @db.Uuid
+  tenantId  String?  @map("tenant_id") @db.Uuid
+  action    String
+  context   Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  admin  PlatformAdmin @relation(fields: [adminId], references: [id])
+  tenant Tenant?       @relation(fields: [tenantId], references: [id])
+
+  @@index([adminId, createdAt])
+  @@index([tenantId, createdAt])
+  @@map("audit_log")
+}
