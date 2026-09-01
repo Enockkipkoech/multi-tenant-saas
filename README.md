@@ -1,7 +1,11 @@
 ## Multi-Tenant SaaS Backend Architecture
 
 ## Design Diagram
-See [architecture diagrams](docs/Multi-tenent-saas-compiled-Architecture.svg#resource-model) — pooled resource model, ERD, webhook dataflow, and the deployment infrastructure.
+See [architecture diagrams](docs/Multi-tenant-saas-compiled-Architecture.svg#resource-model) — pooled resource model, ERD, webhook dataflow, and the deployment infrastructure.
+
+<p align="center">
+  <img src="docs/Multi-tenant-saas-compiled-Architecture.svg" alt="Architecture overview" width="800">
+</p>
 
 
 ## 0. Getting Started
