@@ -128,6 +128,7 @@ Tenant users authenticate into exactly one tenant per request, by design. Intern
 
 - ROOT ENDPOINT HEALTH CHECK : https://switchboardapi-production.up.railway.app/healthz
 - Deployed on Railway, with two services: `api` and `worker`. Each has its own `railway.json` and `Dockerfile`, allowing independent scaling and deployment.
+- Supabase POstgreSQL Database: [Image:](docs/supabase_db.png)
 
 ### Deployment images
 
@@ -139,6 +140,11 @@ Tenant users authenticate into exactly one tenant per request, by design. Intern
 2. Internal Worker service deployment:
 <p align="center">
   <img src="docs/worker-api-depoyment.png" alt="Worker API Deployment Image" width="800">
+</p>
+
+3. Webhook event flow and queue processing:
+<p align="center">
+  <img src="docs/Webhook_processing.png" alt="webhook event flow" width="800">
 </p>
 
 ## 8.0 Testing -  Bash nd postman tests
